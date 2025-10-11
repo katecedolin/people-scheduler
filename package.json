@@ -1,0 +1,14 @@
+{
+  "name": "availability-scheduler",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build needed'",
+    "start": "serve public"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^7.3.0"
+  }
+}

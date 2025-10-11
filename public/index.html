@@ -1,0 +1,162 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Table Scheduler</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --brand: #3b82f6;
+      --brand-600: #2563eb;
+      --brand-700: #1d4ed8;
+    }
+    .brand { color: var(--brand); }
+    .btn {
+      @apply px-4 py-2 rounded-2xl shadow;
+      background: var(--brand);
+      color: white;
+    }
+    .btn:hover { background: var(--brand-600); }
+    .btn-secondary {
+      @apply px-4 py-2 rounded-2xl border;
+      border-color: var(--brand);
+      color: var(--brand-700);
+      background: white;
+    }
+    input, select, textarea { @apply border rounded-xl px-3 py-2 w-full; }
+    .card { @apply p-4 bg-white rounded-2xl shadow; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <div class="max-w-5xl mx-auto p-6 space-y-6">
+    <header class="flex items-center gap-4">
+      <img id="logoPreview" class="h-10 w-auto hidden" alt="Logo"/>
+      <h1 class="text-3xl font-bold">Table Scheduler</h1>
+      <span class="ml-auto text-sm text-gray-500">PST time zone</span>
+    </header>
+
+    <section class="card">
+      <div class="flex flex-wrap gap-2">
+        <button class="btn" onclick="showTab('participant')">Submit Availability</button>
+        <button class="btn-secondary" onclick="showTab('organizer')">Organizer</button>
+        <button class="btn-secondary" onclick="showTab('summary')">Summary</button>
+      </div>
+    </section>
+
+    <!-- Theme / Branding -->
+    <section class="card">
+      <h2 class="text-xl font-semibold mb-2">Branding</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm mb-1">Logo (optional)</label>
+          <input id="logoInput" type="file" accept="image/*" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Primary color</label>
+          <input id="colorPicker" type="color" value="#3b82f6" />
+        </div>
+        <div class="flex items-end">
+          <button class="btn" id="applyTheme">Apply</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Participant tab -->
+    <section id="participant" class="card">
+      <h2 class="text-xl font-semibold mb-4">Submit Availability</h2>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1">Your name</label>
+          <input id="name" placeholder="e.g., Alex Kim">
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Date (YYYY-MM-DD)</label>
+          <input id="date" type="date">
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 mt-4">
+        <div>
+          <label class="block text-sm mb-1">Event start (PST)</label>
+          <input id="eventStart" type="time" value="09:00">
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Event end (PST)</label>
+          <input id="eventEnd" type="time" value="17:00">
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Max time per person</label>
+          <input id="maxMinutes" type="number" value="120" min="15" step="5">
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="block text-sm mb-1">Availability windows (PST)</label>
+        <div id="windows" class="space-y-2"></div>
+        <button class="btn mt-2" id="addWindowBtn">+ Add window</button>
+      </div>
+
+      <div class="mt-6 flex gap-2">
+        <button class="btn" id="submitAvailabilityBtn">Submit</button>
+        <button class="btn-secondary" id="previewParticipantsBtn">See who has submitted</button>
+      </div>
+
+      <div id="participantStatus" class="mt-4 text-sm text-gray-700"></div>
+    </section>
+
+    <!-- Organizer tab -->
+    <section id="organizer" class="card hidden">
+      <h2 class="text-xl font-semibold mb-4">Organizer Tools</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm mb-1">Date (YYYY-MM-DD)</label>
+          <input id="orgDate" type="date">
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Admin passcode</label>
+          <input id="adminCode" type="password" placeholder="Set via Netlify env">
+        </div>
+        <div class="flex items-end gap-2">
+          <button class="btn" id="generateBtn">Generate schedule</button>
+          <button class="btn-secondary" id="loadScheduleBtn">Load saved</button>
+        </div>
+      </div>
+
+      <div id="singleCoverageWarnings" class="mt-4 text-sm text-amber-700"></div>
+
+      <div id="scheduleArea" class="mt-4"></div>
+
+      <div class="mt-4 flex gap-2">
+        <button class="btn" id="saveScheduleBtn">Save schedule (confirm)</button>
+        <button class="btn-secondary" id="deleteDateBtn">Delete this date's data</button>
+      </div>
+
+      <div id="organizerStatus" class="mt-4 text-sm text-gray-700"></div>
+    </section>
+
+    <!-- Summary tab -->
+    <section id="summary" class="card hidden">
+      <h2 class="text-xl font-semibold mb-4">Summary</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm mb-1">Date (YYYY-MM-DD)</label>
+          <input id="sumDate" type="date">
+        </div>
+        <div class="flex items-end">
+          <button class="btn" id="refreshSummaryBtn">Refresh</button>
+        </div>
+      </div>
+      <div id="summaryArea" class="mt-4"></div>
+    </section>
+
+    <footer class="text-center text-xs text-gray-500 py-8">
+      Built for quick, fair scheduling · 5-minute slots · PST
+    </footer>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
