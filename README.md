@@ -62,3 +62,6 @@ A simple Netlify-hosted app that collects availability and generates fair schedu
 - Local dev with Netlify CLI: `netlify dev`
 - No build step; public assets served from `public/`
 
+---doesn't work rn, redo the algorithm
+
+
